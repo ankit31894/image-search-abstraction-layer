@@ -16,11 +16,6 @@ var mongo_url = process.env.MONGOLAB_URI||'mongodb://localhost:27017/my_database
 
 //(Focus on This Variable)
 
-app.get("/", function(request, response) {
-    response.writeHead(200, { "Content-Type": "text/plain" });
-    response.write("Use /api/imagesearch/any_value to search the image\n");
-    response.end("Or /api/latest/imagesearch/ to get latest searches");
-});
 app.get("/api/imagesearch/:string", function(request, response,next) {
     response.writeHead(200, { "Content-Type": "text/plain" });
     var q=request.params.string;
@@ -46,13 +41,12 @@ app.get("/api/imagesearch/:string", function(request, response,next) {
                 console.log('Connection established to', mongo_url);
                 var collection = db.collection('ial')
                  collection.insert({string:q}, function(err,s) {
-                     console.log(s);
+                     response.end(JSON.stringify(ar));
                     db.close();
                  });
             }
         });
 
-        response.end(JSON.stringify(ar));
     });
     function getM(options,callback) {
         https.get(options, function(response) {
@@ -91,7 +85,9 @@ app.get("/api/latest/imagesearch", function(request, response,next) {
 
 });
 app.get("*", function(request, response) {
-    response.end("404!");
+    response.writeHead(200, { "Content-Type": "text/plain" });
+    response.write("Use /api/imagesearch/any_value to search the image\n");
+    response.end("Or /api/latest/imagesearch/ to get latest searches");
 });
 https.createServer(options, app);
 //http.createServer(app);
