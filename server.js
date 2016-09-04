@@ -19,16 +19,16 @@ var mongo_url = process.env.MONGOLAB_URI||'mongodb://localhost:27017/my_database
 app.get("/api/imagesearch/:string", function(request, response,next) {
     response.writeHead(200, { "Content-Type": "text/plain" });
     var q=request.params.string;
-    var num=Math.min(request.query.offset||0,90);
+    var num=Math.min(request.query.offset||1,90);
     var ar=[];
-    getM("https://www.googleapis.com/customsearch/v1?q="+q+"&start="+num+"&searchtype=image&cx=015740443609325608978%3Achvejfx7lbq&key=AIzaSyD0jyiko1BDpDYWqtGGNw-rwiNYMN6T9Yw",function(out){
+    getM("https://www.googleapis.com/customsearch/v1?key=AIzaSyAIMd3tkZ08kjPni1rzh472rhB0PhPF7PQ&cx=015740443609325608978%3Atkiq-mrxvi4&q="+q+"&searchType=image&start="+num,function(out){
         var json_res=JSON.parse(out);
         for(var i=0;i<json_res.items.length;i++){
-            if(json_res.items[i].pagemap.cse_image!=undefined)
+            if(json_res.items[i].image.contextLink!=undefined)
             ar.push({
                 alt:json_res.items[i].snippet,
-                url:json_res.items[i].pagemap.cse_image[0].src,
-                page_url:json_res.items[i].link
+                url:json_res.items[i].link,
+                page_url:json_res.items[i].image.contextLink
             });
         }
 
